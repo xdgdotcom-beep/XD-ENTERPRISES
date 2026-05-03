@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Learning Platform — Project Proposal | Govardhanan P T</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0a0c10;
+            --paper: #f5f2ec;
+            --cream: #ede9df;
+            --gold: #b89a5a;
+            --gold-light: #d4b97a;
+            --gold-muted: #8a7240;
+            --charcoal: #1c1f26;
+            --mid: #4a4f5c;
+            --light: #8a8f9e;
+            --rule: rgba(184, 154, 90, 0.25);
+            --rule-heavy: rgba(184, 154, 90, 0.6);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            background-color: var(--paper);
+            color: var(--charcoal);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Grain texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.6;
+        }
+
+        /* Decorative side rule */
+        .side-rule {
+            position: fixed;
+            left: 32px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--rule-heavy) 20%, var(--rule-heavy) 80%, transparent);
+        }
+        .side-rule-right {
+            position: fixed;
+            right: 32px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--rule) 20%, var(--rule) 80%, transparent);
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            right: 60px;
+            bottom: 60px;
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: 0.15;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── LAYOUT ─── */
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 48px;
+        }
+
+        /* ─── HEADER ─── */
+        header {
+            padding: 80px 0 60px;
+            position: relative;
+            animation: fadeUp 0.9s ease both;
+        }
+
+        .doc-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 48px;
+        }
+        .doc-meta-line {
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(to right, var(--rule-heavy), transparent);
+        }
+        .doc-meta-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            border: 1px solid var(--rule-heavy);
+            padding: 4px 12px;
+            white-space: nowrap;
+        }
+
+        .header-eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--gold-muted);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-eyebrow::before {
+            content: '';
+            width: 32px;
+            height: 1px;
+            background: var(--gold);
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(38px, 6vw, 72px);
+            font-weight: 800;
+            line-height: 1.0;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 28px;
+        }
+        h1 em {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-style: italic;
+            font-weight: 300;
+            color: var(--gold);
+        }
+
+        .header-sub {
+            font-size: 17px;
+            font-weight: 300;
+            line-height: 1.7;
+            color: var(--mid);
+            max-width: 520px;
+            border-left: 2px solid var(--gold);
+            padding-left: 20px;
+        }
+
+        .header-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            margin-top: 56px;
+            border-top: 1px solid var(--rule-heavy);
+            border-bottom: 1px solid var(--rule);
+        }
+        .header-meta-item {
+            padding: 20px 0;
+            border-right: 1px solid var(--rule);
+        }
+        .header-meta-item:first-child { padding-left: 0; }
+        .header-meta-item:last-child { border-right: none; padding-right: 0; }
+        .header-meta-item:not(:first-child) { padding-left: 24px; }
+        .meta-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold-muted);
+            margin-bottom: 6px;
+        }
+        .meta-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        /* ─── SECTION HEADER ─── */
+        .section-title-wrap {
+            margin-bottom: 40px;
+            animation: fadeUp 0.7s ease both;
+        }
+        .section-number {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(22px, 3vw, 32px);
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+        .section-rule {
+            width: 100%;
+            height: 1px;
+            background: var(--rule);
+            margin-top: 16px;
+        }
+
+        /* ─── SECTIONS ─── */
+        section {
+            padding: 64px 0;
+            border-bottom: 1px solid var(--rule);
+            animation: fadeUp 0.7s ease both;
+        }
+
+        /* ─── MILESTONES ─── */
+        .milestone-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .milestone {
+            display: grid;
+            grid-template-columns: 64px 1fr auto;
+            gap: 0 28px;
+            padding: 28px 0;
+            border-bottom: 1px solid var(--rule);
+            align-items: start;
+            transition: background 0.2s ease;
+            position: relative;
+        }
+        .milestone:last-child { border-bottom: none; }
+        .milestone::before {
+            content: '';
+            position: absolute;
+            inset: 0 -48px;
+            background: transparent;
+            transition: background 0.25s ease;
+            z-index: -1;
+        }
+        .milestone:hover::before {
+            background: rgba(184, 154, 90, 0.04);
+        }
+
+        .milestone-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            color: var(--gold-muted);
+            padding-top: 4px;
+        }
+        .milestone-num span {
+            display: block;
+            font-size: 28px;
+            font-weight: 300;
+            color: var(--gold);
+            letter-spacing: 0;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .milestone-body {}
+        .milestone-stage {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            color: var(--gold-muted);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .milestone-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+        .milestone-trigger {
+            font-size: 13px;
+            color: var(--light);
+            font-style: italic;
+            margin-bottom: 14px;
+        }
+        .milestone-items {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .milestone-items li {
+            font-size: 15px;
+            font-weight: 300;
+            color: var(--mid);
+            line-height: 1.5;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .milestone-items li::before {
+            content: '—';
+            color: var(--gold);
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+
+        .milestone-pct {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--charcoal);
+            line-height: 1;
+            padding-top: 4px;
+            opacity: 0.18;
+            letter-spacing: -0.02em;
+        }
+        .milestone:hover .milestone-pct {
+            opacity: 0.35;
+            color: var(--gold);
+            transition: all 0.25s ease;
+        }
+
+        .policy-note {
+            margin-top: 32px;
+            padding: 20px 24px;
+            border: 1px solid var(--rule-heavy);
+            background: rgba(184, 154, 90, 0.04);
+            display: flex;
+            gap: 16px;
+            align-items: start;
+        }
+        .policy-icon {
+            color: var(--gold);
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-size: 18px;
+        }
+        .policy-text {
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--mid);
+            line-height: 1.7;
+        }
+        .policy-text strong {
+            font-weight: 600;
+            color: var(--charcoal);
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            letter-spacing: 0.03em;
+        }
+
+        /* ─── INVESTMENT TIERS ─── */
+        .tiers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--rule-heavy);
+            border: 1px solid var(--rule-heavy);
+        }
+
+        .tier {
+            background: var(--paper);
+            padding: 36px 28px;
+            position: relative;
+            transition: background 0.25s ease;
+            cursor: default;
+        }
+        .tier:hover { background: var(--cream); }
+        .tier.featured {
+            background: var(--charcoal);
+        }
+        .tier.featured:hover {
+            background: #232731;
+        }
+
+        .tier-badge {
+            position: absolute;
+            top: 0;
+            right: 24px;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            background: var(--gold);
+            color: var(--ink);
+            padding: 4px 10px;
+            font-weight: 500;
+        }
+
+        .tier-name {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--gold-muted);
+            margin-bottom: 12px;
+        }
+        .tier.featured .tier-name { color: var(--gold); }
+
+        .tier-price {
+            font-family: 'Syne', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+            line-height: 1.1;
+        }
+        .tier.featured .tier-price { color: var(--gold-light); }
+
+        .tier-price-note {
+            font-size: 13px;
+            font-style: italic;
+            color: var(--light);
+            margin-bottom: 24px;
+        }
+        .tier.featured .tier-price-note { color: rgba(255,255,255,0.35); }
+
+        .tier-divider {
+            width: 32px;
+            height: 1px;
+            background: var(--rule-heavy);
+            margin-bottom: 24px;
+        }
+        .tier.featured .tier-divider { background: rgba(184,154,90,0.4); }
+
+        .tier-desc {
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.65;
+            color: var(--mid);
+            margin-bottom: 24px;
+        }
+        .tier.featured .tier-desc { color: rgba(255,255,255,0.5); }
+
+        .tier-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .tier-features li {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--charcoal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tier.featured .tier-features li { color: rgba(255,255,255,0.8); }
+        .tier-features li::before {
+            content: '';
+            width: 16px;
+            height: 1px;
+            background: var(--gold);
+            flex-shrink: 0;
+        }
+
+        /* ─── FEE TABLE ─── */
+        .table-intro {
+            font-size: 16px;
+            font-weight: 300;
+            color: var(--mid);
+            line-height: 1.7;
+            max-width: 520px;
+            margin-bottom: 32px;
+        }
+        .table-intro strong {
+            color: var(--charcoal);
+            font-weight: 600;
+        }
+        .table-intro .amount {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            color: var(--gold);
+        }
+
+        .fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .fee-table thead tr {
+            border-bottom: 2px solid var(--rule-heavy);
+        }
+        .fee-table thead th {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold-muted);
+            padding: 0 0 14px;
+            text-align: left;
+            font-weight: 400;
+        }
+        .fee-table thead th:last-child { text-align: right; }
+        .fee-table thead th:nth-child(3) { text-align: center; }
+
+        .fee-table tbody tr {
+            border-bottom: 1px solid var(--rule);
+            transition: background 0.15s ease;
+        }
+        .fee-table tbody tr:hover { background: rgba(184,154,90,0.04); }
+        .fee-table tbody tr.highlighted {
+            background: rgba(184,154,90,0.06);
+        }
+        .fee-table tbody tr.highlighted td { border-color: rgba(184,154,90,0.2); }
+
+        .fee-table td {
+            padding: 18px 0;
+            vertical-align: middle;
+        }
+        .fee-table td:not(:first-child) { padding-left: 20px; }
+        .fee-table td:last-child { text-align: right; }
+        .fee-table td:nth-child(3) { text-align: center; }
+
+        .td-stage {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--light);
+            letter-spacing: 0.05em;
+        }
+        .td-name {
+            font-weight: 400;
+            color: var(--charcoal);
+            line-height: 1.4;
+        }
+        .td-pct {
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            color: var(--gold);
+        }
+        .td-amount {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            color: var(--charcoal);
+        }
+        .highlighted .td-amount {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .fee-table tfoot tr {
+            border-top: 2px solid var(--rule-heavy);
+        }
+        .fee-table tfoot td {
+            padding-top: 20px;
+            padding-bottom: 4px;
+        }
+        .total-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--mid);
+        }
+        .total-amount {
+            font-family: 'Syne', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: -0.02em;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            padding: 48px 0 80px;
+            animation: fadeUp 0.7s ease both;
+        }
+        .footer-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            border-top: 1px solid var(--rule-heavy);
+            padding-top: 32px;
+        }
+        .footer-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+        .footer-role {
+            font-size: 13px;
+            font-weight: 300;
+            color: var(--light);
+            font-style: italic;
+            margin-top: 4px;
+        }
+        .footer-doc {
+            text-align: right;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--light);
+            line-height: 1.8;
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        section:nth-of-type(1) { animation-delay: 0.1s; }
+        section:nth-of-type(2) { animation-delay: 0.2s; }
+        section:nth-of-type(3) { animation-delay: 0.3s; }
+
+        @media (max-width: 700px) {
+            .wrapper { padding: 0 24px; }
+            .side-rule, .side-rule-right, .watermark { display: none; }
+            .tiers-grid { grid-template-columns: 1fr; }
+            .header-meta-grid { grid-template-columns: 1fr; }
+            .header-meta-item { border-right: none; border-bottom: 1px solid var(--rule); padding: 16px 0 !important; }
+            .milestone { grid-template-columns: 48px 1fr; }
+            .milestone-pct { display: none; }
+            .fee-table { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="side-rule"></div>
+    <div class="side-rule-right"></div>
+    <div class="watermark">Confidential · 2025 · Govardhanan P T</div>
+
+    <div class="wrapper">
+
+        <!-- ─── HEADER ─── -->
+        <header>
+            <div class="doc-meta">
+                <div class="doc-meta-tag">Document No. GPT-2025-ELP-01</div>
+                <div class="doc-meta-line"></div>
+                <div class="doc-meta-tag">Confidential</div>
+            </div>
+
+            <div class="header-eyebrow">Project Proposal</div>
+
+            <h1>E-Learning Platform<br><em>Architecture & Development</em></h1>
+
+            <p class="header-sub">A comprehensive technical blueprint and structured investment schedule for a custom course delivery ecosystem.</p>
+
+            <div class="header-meta-grid">
+                <div class="header-meta-item">
+                    <div class="meta-label">Prepared by</div>
+                    <div class="meta-value">Govardhanan P T</div>
+                </div>
+                <div class="header-meta-item">
+                    <div class="meta-label">Date Issued</div>
+                    <div class="meta-value">May 2025</div>
+                </div>
+                <div class="header-meta-item">
+                    <div class="meta-label">Document Type</div>
+                    <div class="meta-value">Fixed-Fee Proposal</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ─── SECTION 1: MILESTONES ─── -->
+        <section>
+            <div class="section-title-wrap">
+                <div class="section-number">01 / Development Framework</div>
+                <h2>Phased Delivery Milestones</h2>
+                <div class="section-rule"></div>
+            </div>
+
+            <div class="milestone-list">
+
+                <div class="milestone">
+                    <div class="milestone-num">
+                        <span>01</span>
+                        Stage
+                    </div>
+                    <div class="milestone-body">
+                        <div class="milestone-stage">Trigger · Upon signing</div>
+                        <div class="milestone-title">Project Kickoff & Architecture</div>
+                        <div class="milestone-trigger">Initial deposit — work commences immediately on agreement</div>
+                        <ul class="milestone-items">
+                            <li>Comprehensive project roadmap, sitemap definition, and timeline scoping.</li>
+                            <li>Technical architecture design and relational database structure planning.</li>
+                            <li>Finalization of core feature sets — video hosting, user roles, content access control.</li>
+                        </ul>
+                    </div>
+                    <div class="milestone-pct">20%</div>
+                </div>
+
+                <div class="milestone">
+                    <div class="milestone-num">
+                        <span>02</span>
+                        Stage
+                    </div>
+                    <div class="milestone-body">
+                        <div class="milestone-stage">Trigger · Upon design approval</div>
+                        <div class="milestone-title">UI/UX Front-End Development</div>
+                        <div class="milestone-trigger">Billed upon client sign-off of design review session</div>
+                        <ul class="milestone-items">
+                            <li>Delivery of fully responsive HTML/CSS interfaces and component library.</li>
+                            <li>Implementation of premium aesthetics aligned to brand identity.</li>
+                            <li>Interactive prototype demonstrating complete user flow and navigation hierarchy.</li>
+                        </ul>
+                    </div>
+                    <div class="milestone-pct">20%</div>
+                </div>
+
+                <div class="milestone">
+                    <div class="milestone-num">
+                        <span>03</span>
+                        Stage
+                    </div>
+                    <div class="milestone-body">
+                        <div class="milestone-stage">Trigger · Upon staging server deployment</div>
+                        <div class="milestone-title">Back-End & Payment Integration</div>
+                        <div class="milestone-trigger">Largest milestone — core platform functionality delivered</div>
+                        <ul class="milestone-items">
+                            <li>Secure database architecture, user authentication, and role-based access control.</li>
+                            <li>Payment gateway integration — Stripe / Razorpay — with automated receipts.</li>
+                            <li>Full LMS feature implementation, content restriction algorithms, and progress tracking.</li>
+                        </ul>
+                    </div>
+                    <div class="milestone-pct">30%</div>
+                </div>
+
+                <div class="milestone">
+                    <div class="milestone-num">
+                        <span>04</span>
+                        Stage
+                    </div>
+                    <div class="milestone-body">
+                        <div class="milestone-stage">Trigger · Post beta-testing review</div>
+                        <div class="milestone-title">Content Population & QA Testing</div>
+                        <div class="milestone-trigger">Billed after completion of client-approved beta review cycle</div>
+                        <ul class="milestone-items">
+                            <li>Structured upload of seed content — sample courses, video assets, and PDF materials.</li>
+                            <li>Rigorous cross-browser, device, and functional test suite execution.</li>
+                            <li>Bug resolution, performance benchmarking, and final client review sign-off.</li>
+                        </ul>
+                    </div>
+                    <div class="milestone-pct">15%</div>
+                </div>
+
+                <div class="milestone">
+                    <div class="milestone-num">
+                        <span>05</span>
+                        Stage
+                    </div>
+                    <div class="milestone-body">
+                        <div class="milestone-stage">Trigger · Upon production migration</div>
+                        <div class="milestone-title">Live Server Launch & Handoff</div>
+                        <div class="milestone-trigger">Final payment upon successful deployment to production</div>
+                        <ul class="milestone-items">
+                            <li>Deployment to live production server with domain mapping and DNS configuration.</li>
+                            <li>SSL/TLS certification, server hardening, and security configuration audit.</li>
+                            <li>Complete handoff — source code repository, admin credentials, and operational training.</li>
+                        </ul>
+                    </div>
+                    <div class="milestone-pct">15%</div>
+                </div>
+
+            </div>
+
+            <div class="policy-note">
+                <div class="policy-icon">§</div>
+                <div class="policy-text">
+                    <strong>Standard Policy</strong><br>
+                    Work on each subsequent stage commences only upon clearance of the invoice for the preceding stage. This sequential billing structure ensures complete project alignment, accountability, and timely delivery across all phases.
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── SECTION 2: INVESTMENT TIERS ─── -->
+        <section>
+            <div class="section-title-wrap">
+                <div class="section-number">02 / Investment Structure</div>
+                <h2>Engagement Tiers</h2>
+                <div class="section-rule"></div>
+            </div>
+
+            <div class="tiers-grid">
+                <div class="tier">
+                    <div class="tier-name">Tier I — MVP</div>
+                    <div class="tier-price">₹80K – ₹1.30L</div>
+                    <div class="tier-price-note">Market validation build</div>
+                    <div class="tier-divider"></div>
+                    <div class="tier-desc">A functional, streamlined platform engineered to validate your digital product concept with speed and efficiency.</div>
+                    <ul class="tier-features">
+                        <li>Standard UI components & layout</li>
+                        <li>Basic user authentication system</li>
+                        <li>Single payment gateway integration</li>
+                        <li>Lightweight admin panel</li>
+                        <li>Core course delivery</li>
+                    </ul>
+                </div>
+
+                <div class="tier featured">
+                    <div class="tier-badge">Recommended</div>
+                    <div class="tier-name">Tier II — Professional</div>
+                    <div class="tier-price">₹1.35L – ₹2.10L</div>
+                    <div class="tier-price-note">Serious business infrastructure</div>
+                    <div class="tier-divider"></div>
+                    <div class="tier-desc">A robust, scalable architecture purpose-built for serious e-learning enterprises with growth ambitions.</div>
+                    <ul class="tier-features">
+                        <li>Premium bespoke UI/UX design</li>
+                        <li>Student progress & analytics</li>
+                        <li>Automated receipts & invoicing</li>
+                        <li>Comprehensive admin dashboard</li>
+                        <li>Multi-gateway payment support</li>
+                    </ul>
+                </div>
+
+                <div class="tier">
+                    <div class="tier-name">Tier III — Enterprise</div>
+                    <div class="tier-price">₹3.50L+</div>
+                    <div class="tier-price-note">High-scale ecosystem</div>
+                    <div class="tier-divider"></div>
+                    <div class="tier-desc">Highly complex, interactive ecosystems architected for significant scale, high traffic, and multi-stakeholder operations.</div>
+                    <ul class="tier-features">
+                        <li>Advanced interaction systems</li>
+                        <li>Complex distributed architecture</li>
+                        <li>Secure DRM video encryption</li>
+                        <li>Multi-instructor revenue payouts</li>
+                        <li>Enterprise reporting suite</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── SECTION 3: FEE BREAKDOWN ─── -->
+        <section>
+            <div class="section-title-wrap">
+                <div class="section-number">03 / Sample Calculation</div>
+                <h2>Illustrative Fee Schedule</h2>
+                <div class="section-rule"></div>
+            </div>
+
+            <p class="table-intro">
+                The schedule below illustrates the payment cadence for a <strong>Professional Tier</strong> engagement valued at <span class="amount">₹1,50,000 INR</span>. Actual amounts are calculated proportionally from the agreed project value.
+            </p>
+
+            <table class="fee-table">
+                <thead>
+                    <tr>
+                        <th style="width:52px">Stage</th>
+                        <th>Milestone Definition</th>
+                        <th style="width:72px">Weight</th>
+                        <th style="width:130px">Amount (INR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="td-stage">01</td>
+                        <td class="td-name">Project Kickoff & Architecture</td>
+                        <td class="td-pct">20%</td>
+                        <td class="td-amount">₹30,000</td>
+                    </tr>
+                    <tr>
+                        <td class="td-stage">02</td>
+                        <td class="td-name">Front-End UI/UX Development</td>
+                        <td class="td-pct">20%</td>
+                        <td class="td-amount">₹30,000</td>
+                    </tr>
+                    <tr class="highlighted">
+                        <td class="td-stage">03</td>
+                        <td class="td-name">Back-End & Payment Integration</td>
+                        <td class="td-pct">30%</td>
+                        <td class="td-amount">₹45,000</td>
+                    </tr>
+                    <tr>
+                        <td class="td-stage">04</td>
+                        <td class="td-name">Content Population & QA Testing</td>
+                        <td class="td-pct">15%</td>
+                        <td class="td-amount">₹22,500</td>
+                    </tr>
+                    <tr>
+                        <td class="td-stage">05</td>
+                        <td class="td-name">Live Server Launch & Handoff</td>
+                        <td class="td-pct">15%</td>
+                        <td class="td-amount">₹22,500</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="total-label" style="text-align:right; padding-right:20px">Total Project Value</td>
+                        <td class="total-amount">₹1,50,000</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+
+        <!-- ─── FOOTER ─── -->
+        <footer>
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-name">Govardhanan P T</div>
+                    <div class="footer-role">Full-Stack Developer & Platform Architect</div>
+                </div>
+                <div class="footer-doc">
+                    <div>GPT-2025-ELP-01</div>
+                    <div>Version 1.0 · May 2025</div>
+                    <div>All figures in Indian Rupees (INR)</div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+</body>
+</html>
